@@ -1,6 +1,6 @@
 module github.com/hajimehoshi/guigui
 
-go 1.23.0
+go 1.25rc1
 
 require (
 	github.com/atotto/clipboard v0.1.4
