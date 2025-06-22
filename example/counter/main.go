@@ -6,6 +6,7 @@ package main
 import (
 	"fmt"
 	"image"
+	"io/fs"
 	"os"
 
 	"github.com/hajimehoshi/ebiten/v2"
@@ -28,6 +29,24 @@ type Root struct {
 }
 
 func (r *Root) Build(context *guigui.Context, appender *guigui.ChildWidgetAppender) error {
+	if files := ebiten.DroppedFiles(); files != nil {
+		go func() {
+			if err := fs.WalkDir(files, ".", func(path string, d fs.DirEntry, err error) error {
+				if err != nil {
+					return err
+				}
+				if d.IsDir() {
+					return nil
+				}
+				println(path)
+
+				return nil
+			}); err != nil {
+				fmt.Fprintln(os.Stderr, err)
+			}
+		}()
+	}
+
 	appender.AppendChildWidgetWithBounds(&r.background, context.Bounds(r))
 
 	r.counterText.SetSelectable(true)
